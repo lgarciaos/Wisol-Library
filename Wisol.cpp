@@ -1,5 +1,5 @@
 /**
- * Wisol.h - Library for interfaciong with Wisol WSSFM11R2D Module.
+ * Wisol.h - Library for interfaciong with Wisol WSSFM1xR2D Module.
  * Created by lgarciaos, February 9, 2020.
 */
 
@@ -19,7 +19,7 @@ void Wisol::begin(){
   _serial->println(CMD_CB);
   _delay_ms(200);
   read();
-  _serial->println(CMD_TR3);
+  _serial->println(CMD_TR3); //setting repetition to 3
   _delay_ms(200);
   read();
 }
@@ -46,7 +46,7 @@ String Wisol::get_id(){
     _serial->println(CMD_AT);
     _delay_ms(100);
     read(); //should return 'OK'
-    _serial->println(CMD_ID);// Command to get ID
+    _serial->println(CMD_ID);
     _delay_ms(100);
     _id= read();
   }
@@ -59,7 +59,7 @@ String Wisol::get_pac(){
     _serial->println(CMD_AT);
     _delay_ms(100);
     read(); //should return 'OK'
-    _serial->println(CMD_PAC);// Command to get ID
+    _serial->println(CMD_PAC);
     _delay_ms(100);
     _pac= read();
   }
@@ -71,51 +71,37 @@ String Wisol::get_temp(){
   _serial->println(CMD_AT);
   _delay_ms(100);
   read(); //should return 'OK'
-  _serial->println(CMD_TEMP);// Command to get ID
+  _serial->println(CMD_TEMP);
   _delay_ms(100);
   return read();
 }
 
-void Wisol::send(String msg){ // takes ~680ms BEWARE
+void Wisol::send(String msg){ // takes ~4800ms BEWARE
   String wisolResponse = "";
   read(); //clean buffer
-  // Serial.println("AT");
   _serial->printf(CMD_AT);
   _delay_ms(200);
   wisolResponse = read();
-  // Serial.println(wisolResponse);
 
-  // Serial.println("AT$GI?");
   _serial->println(CMD_GI);
   _delay_ms(200);
   wisolResponse = read();
-  // Serial.println(wisolResponse);
 
   if (int(wisolResponse[0]) == 48 || int(wisolResponse[2]) < 51) {
-    // Serial.println("AT$RC");
     _serial->println(CMD_RC);
     _delay_ms(200);
     wisolResponse = read();
-    // Serial.println(wisolResponse);
   }
 
   _serial->println(CMD_WRITE+msg);
-  // Serial.print(CMD_WRITE+msg);
   //_serial.println(",1");  // uncomment if expecting downlink response
-  _delay_ms(200);
-  // Serial.println("Reading after 200");
-  wisolResponse = read();
-  // Serial.println(wisolResponse);
   _delay_ms(4000);
-  // Serial.println("Reading after 4000");
   wisolResponse = read();
   Serial.println(wisolResponse);
 
-  // Serial.println("AT");
   _serial->println(CMD_AT);
   _delay_ms(100);
   wisolResponse = read();
-  // Serial.println(wisolResponse);
 }
 
 void Wisol::sleep(){
@@ -123,7 +109,7 @@ void Wisol::sleep(){
   _serial->println(CMD_AT);
   _delay_ms(100);
   read();
-  _serial->println(CMD_SLEEP); //deep sleep
+  _serial->println(CMD_SLEEP);
 }
 
 void Wisol::deep_sleep(){
@@ -131,11 +117,14 @@ void Wisol::deep_sleep(){
   _serial->println(CMD_AT);
   _delay_ms(100);
   read();
-  _serial->println(CMD_DEEP_SLEEP); //deep sleep
+  _serial->println(CMD_DEEP_SLEEP);
 }
 
 void Wisol::wakeup(){
   digitalWrite(_sleep_pin,LOW);
   _delay_ms(250);
   digitalWrite(_sleep_pin,HIGH);
+  _serial->println(CMD_AT);
+  _delay_ms(100);
+  read();
 }
