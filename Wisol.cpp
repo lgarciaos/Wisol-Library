@@ -110,6 +110,7 @@ void Wisol::sleep(){
   _delay_ms(100);
   read();
   _serial->println(CMD_SLEEP);
+  read();
 }
 
 void Wisol::deep_sleep(){
@@ -120,11 +121,22 @@ void Wisol::deep_sleep(){
   _serial->println(CMD_DEEP_SLEEP);
 }
 
-void Wisol::wakeup(){
+void Wisol::wakeup_sleep(){
   digitalWrite(_sleep_pin,LOW);
   _delay_ms(250);
   digitalWrite(_sleep_pin,HIGH);
   _serial->println(CMD_AT);
   _delay_ms(100);
   read();
+}
+void Wisol::wakeup_deep_sleep(){
+  _serial->println(CMD_AT);
+  _delay_ms(100);
+  _serial->println(CMD_AT);
+  _delay_ms(100);
+  read();
+}
+
+void Wisol::close(){
+  _serial->end();
 }

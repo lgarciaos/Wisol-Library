@@ -32,7 +32,9 @@ class Wisol
     void send(String msg);
     void sleep(void);
     void deep_sleep(void);
-    void wakeup(void);
+    void wakeup_sleep(void);
+    void wakeup_deep_sleep(void);
+    void close(void);
   private:
     String read();
     int _sleep_pin;
